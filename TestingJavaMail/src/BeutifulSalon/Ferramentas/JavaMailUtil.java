@@ -58,7 +58,7 @@ public class JavaMailUtil {
                     new InternetAddress( recepient ) );
 
             message.setSubject( "Meu primeiro email" );
-            message.setText( "Oi, \n Olha meu email!" );
+            message.setText( "Oi, tudo bem? \n Notamos que tem 3 meses que você não nos visita, o que acha de marcar um horário com a gente? \n Ligue para (11) 4002-8922 e agende um horário.\n Estamos aguardando sua visita!" );
 
             return message;
 
