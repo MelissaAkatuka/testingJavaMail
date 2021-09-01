@@ -10,6 +10,12 @@ import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.activation.DataHandler; //imports para imagem
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.BodyPart;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 
 /**
  *
@@ -24,6 +30,7 @@ public class JavaMailUtil {
 
         properties.put( "mail.smtp.auth", "true" );
         properties.put( "mail.smtp.starttls.enable", "true" );
+        properties.put("mail.smtp.ssl.trust", "smtp.gmail.com"); //linha adicionada para antivirus não dar problema
         properties.put( "mail.smtp.host", "smtp.gmail.com" );
         properties.put( "mail.smtp.port", "587" );
 
@@ -57,9 +64,34 @@ public class JavaMailUtil {
                     Message.RecipientType.TO,
                     new InternetAddress( recepient ) );
 
-            message.setSubject( "Meu primeiro email" );
-            message.setText( "Oi, tudo bem? \n Notamos que tem 3 meses que você não nos visita, o que acha de marcar um horário com a gente? \n Ligue para (11) 4002-8922 e agende um horário.\n Estamos aguardando sua visita!" );
-
+            message.setSubject( "Email com imagem" );
+            //message.setText( "Acho que pode dar certo o teste hahahha" );
+            
+            // Criando a parte que vai tratar a imagem
+            MimeMultipart multipart = new MimeMultipart( "related" );
+            
+            // Corpo da mensagem
+            BodyPart messageBodyPart = new MimeBodyPart();
+            String htmlText = "<h1>Oi, tudo bem?"
+                    + "<p> Notamos que tem 3 meses que você não nos visita, o que acha de marcar um horário com a gente?"
+                    + "<p> Ligue para (11) 4002-8922 e agende um horário."
+                    + "<p> Estamos aguardando sua visita!</h1>"
+                    + "<img src='cid:image' />";
+            messageBodyPart.setContent(htmlText, "text/html");
+            // Add
+            multipart.addBodyPart( messageBodyPart );
+            
+            // Pegando a imagem
+            messageBodyPart = new MimeBodyPart();
+            DataSource img = new FileDataSource( "./src/beautifulSalon/img/cartao-visita.jpg" );
+            messageBodyPart.setDataHandler( new DataHandler(img) );
+            messageBodyPart.setHeader( "Content-ID", "<image>" );
+            // Add a imagem
+            multipart.addBodyPart( messageBodyPart );
+            
+            // Juntando tudo
+            message.setContent( multipart );
+            
             return message;
 
         } catch ( Exception ex ) {
